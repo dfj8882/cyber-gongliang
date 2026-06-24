@@ -65,7 +65,7 @@ button:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-.result-box{display:none;animation:fadeIn 0.8s ease-out}#resultContent{transition:filter 0.5s}
+.result-box{display:none;animation:fadeIn 0.8s ease-out}
 .bazi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin:20px 0}
 .bazi-cell{background:rgba(255,255,255,0.06);border-radius:8px;padding:10px 4px}
 .bazi-cell .pillar-label{font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px}
@@ -198,7 +198,7 @@ footer .brand{font-size:0.75em;opacity:0.5;margin-top:4px}
 <div class="eth-address">0xfc7501fdbe9e7f37dd1d468e1c726291a127d331</div>
 <button style="padding:5px 10px;font-size:0.8em;margin:0;width:auto" onclick="copyAddress()">复制地址</button>
 </div>
-<button style="width:100%;padding:12px;background:linear-gradient(45deg,#b8860b,#ffd700);border:none;border-radius:8px;color:#000;font-weight:bold;font-size:1em;cursor:pointer;margin-top:8px" onclick="unlockResult()">我已支付 · 查看公粮命格</button>
+<button class="close-btn" onclick="closePayment()">稍后再说</button>
 </div>
 </div>
 
@@ -810,7 +810,7 @@ function startDivination() {
       document.getElementById("resultBox").style.display = "block";
       
       setTimeout(function() {
-        document.getElementById("resultContent").style.filter = "blur(8px)"; document.getElementById("pricing").style.display = "block";
+        document.getElementById("pricing").style.display = "block";
       }, 1500);
       
     } catch(e) {
@@ -834,11 +834,6 @@ function switchTab(type) {
   }
 }
 
-function unlockResult() {
-  document.getElementById("pricing").style.display = "none";
-  document.getElementById("paymentModal").style.display = "none";
-  document.getElementById("resultContent").style.filter = "none";
-}
 
 function copyAddress() {
   navigator.clipboard.writeText("0xfc7501fdbe9e7f37dd1d468e1c726291a127d331").then(function() {
