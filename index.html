@@ -65,7 +65,7 @@ button:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-.result-box{display:none;animation:fadeIn 0.8s ease-out}
+.result-box{display:none;animation:fadeIn 0.8s ease-out}#resultContent{transition:filter 0.5s}
 .bazi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin:20px 0}
 .bazi-cell{background:rgba(255,255,255,0.06);border-radius:8px;padding:10px 4px}
 .bazi-cell .pillar-label{font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px}
@@ -198,7 +198,7 @@ footer .brand{font-size:0.75em;opacity:0.5;margin-top:4px}
 <div class="eth-address">0xfc7501fdbe9e7f37dd1d468e1c726291a127d331</div>
 <button style="padding:5px 10px;font-size:0.8em;margin:0;width:auto" onclick="copyAddress()">复制地址</button>
 </div>
-<button class="close-btn" onclick="closePayment()">稍后再说</button>
+<button style="width:100%;padding:12px;background:linear-gradient(45deg,#b8860b,#ffd700);border:none;border-radius:8px;color:#000;font-weight:bold;font-size:1em;cursor:pointer;margin-top:8px" onclick="unlockResult()">我已支付 · 解锁命盘</button>
 </div>
 </div>
 
@@ -805,12 +805,12 @@ function startDivination() {
       html += "<div class=\"result-level\">" + (r.level >= 2 ? "\u884c\u653f\u516c\u52a1\u5458\u7f16\u5236" : r.level >= 1 ? "\u4e8b\u4e1a\u5355\u4f4d\u6216\u4f01\u4e1a\u7ba1\u7406" : "\u516c\u95e8\u7f18\u5206\u8f83\u8584") + "</div>";
       html += "<div class=\"stars\">" + (r.level >= 2 ? "\u2605\u2605\u2605\u2605\u2605" : r.level >= 1 ? "\u2605\u2605\u2605\u2606\u2606" : "\u2605\u2605\u2606\u2606\u2606") + "</div>";
       
-      document.getElementById("resultContent").innerHTML = html;
+      window._fullResult = html; document.getElementById("resultContent").innerHTML = html;
       document.getElementById("loading").style.display = "none";
       document.getElementById("resultBox").style.display = "block";
       
       setTimeout(function() {
-        document.getElementById("pricing").style.display = "block";
+        document.getElementById("resultContent").style.filter = "blur(8px)"; document.getElementById("pricing").style.display = "block";
       }, 1500);
       
     } catch(e) {
@@ -833,9 +833,43 @@ function switchTab(type) {
     document.getElementById("eth-address-box").style.display = "block";
   }
 }
+
+function unlockResult() {
+  document.getElementById("pricing").style.display = "none";
+  document.getElementById("paymentModal").style.display = "none";
+  document.getElementById("resultContent").style.filter = "none";
+}
+
 function copyAddress() {
   navigator.clipboard.writeText("0xfc7501fdbe9e7f37dd1d468e1c726291a127d331").then(function() {
     alert("\u4ee5\u592a\u574a\u5730\u5740\u5df2\u590d\u5236\uff0c\u8bf7\u4f7f\u7528\u52a0\u5bc6\u94b1\u5305\u8f6c\u8d26");
+  });
+}
+
+
+function showPayment(price) {
+  document.getElementById("payAmount").innerText = "结缘法金: ¥" + price;
+  document.getElementById("paymentModal").style.display = "flex";
+}
+function closePayment() {
+  document.getElementById("paymentModal").style.display = "none";
+}
+function switchTab(type) {
+  document.querySelectorAll(".qr-tab").forEach(function(t) { t.classList.remove("active"); });
+  document.querySelectorAll(".qr-code").forEach(function(c) { c.classList.remove("active"); });
+  if(type === "alipay") {
+    document.querySelector(".qr-tab.alipay").classList.add("active");
+    document.getElementById("qr-alipay").classList.add("active");
+    document.getElementById("eth-address-box").style.display = "none";
+  } else {
+    document.querySelector(".qr-tab.eth").classList.add("active");
+    document.getElementById("qr-eth").classList.add("active");
+    document.getElementById("eth-address-box").style.display = "block";
+  }
+}
+function copyAddress() {
+  navigator.clipboard.writeText("0xfc7501fdbe9e7f37dd1d468e1c726291a127d331").then(function() {
+    alert("以太坊地址已复制，请使用加密钱包转账");
   });
 }
 
@@ -844,4 +878,34 @@ window.onload = function() {
 };
 </script>
 </body>
-</html>
+</html
+<div class="pricing-section" id="pricing" style="display:none;margin-top:30px;text-align:center;animation:slideUp 0.5s ease-out forwards">
+<div style="font-size:0.9em;color:#aaa;margin-bottom:15px">— 完整命盘需解锁 —</div>
+<div class="tier" onclick="showPayment('19.90')">
+<div><div class="tier-name">完整命盘解锁</div><div class="tier-desc">四柱八字 · 十神分析 · 公粮判定</div></div>
+<div class="tier-price">¥19.90</div>
+</div>
+</div>
+
+<div class="payment-modal" id="paymentModal">
+<div class="payment-content">
+<h3 id="payAmount" style="margin-top:0;">结缘: ¥19.90</h3>
+<p style="font-size:0.9em;color:#888;text-align:center">选择支付方式</p>
+<div class="qr-tabs">
+<div class="qr-tab active alipay" onclick="switchTab('alipay')">支付宝</div>
+<div class="qr-tab eth" onclick="switchTab('eth')">Ethereum (ETH/USDC)</div>
+</div>
+<div class="qr-code active" id="qr-alipay">
+<img src="./alipay.jpg" alt="支付宝收款码" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'250\' height=\'250\'><rect width=\'250\' height=\'250\' fill=\'%23f0f0f0\'/><text x=\'50%\' y=\'50%\' font-size=\'16\' text-anchor=\'middle\' fill=\'%23666\'>请上传 alipay.jpg</text></svg>'">
+</div>
+<div class="qr-code" id="qr-eth">
+<img src="./eth.png" alt="ETH收款码" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'250\' height=\'250\'><rect width=\'250\' height=\'250\' fill=\'%23f0f0f0\'/><text x=\'50%\' y=\'50%\' font-size=\'16\' text-anchor=\'middle\' fill=\'%23666\'>请上传 eth.png</text></svg>'">
+</div>
+<div id="eth-address-box" style="display:none">
+<div class="eth-address">0xfc7501fdbe9e7f37dd1d468e1c726291a127d331</div>
+<button style="padding:5px 10px;font-size:0.8em;margin:0;width:auto" onclick="copyAddress()">复制地址</button>
+</div>
+<button class="close-btn" onclick="closePayment()">稍后再说</button>
+</div>
+</div>
+>
