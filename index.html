@@ -3,131 +3,73 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>六维天机 - 跨越古今的AI命理推演 | EverDao 出品</title>
+<title>六维天机 - 八字测公粮</title>
 <style>
-:root {
-    --primary-color: #ffd700;
-    --bg-color: #050510;
-    --panel-bg: rgba(20, 20, 40, 0.8);
-    --text-color: #e0e0e0;
-    --accent-color: #ff3366;
-    --eth-color: #627eea;
-    --alipay-color: #1677ff;
-}
 *{margin:0;padding:0;box-sizing:border-box}
-body{
-    margin:0;padding:0;
-    font-family:'PingFang SC','Microsoft YaHei',sans-serif;
-    background-color:var(--bg-color);
-    background-image:radial-gradient(circle at 50% 50%,#1a1a3a 0%,#050510 100%);
-    color:var(--text-color);
-    line-height:1.6;min-height:100vh;
-    display:flex;flex-direction:column;align-items:center
-}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#050510;background-image:radial-gradient(circle at 50% 50%,#1a1a3a 0%,#050510 100%);color:#e0e0e0;line-height:1.6;min-height:100vh;display:flex;flex-direction:column;align-items:center}
 .container{width:100%;max-width:600px;padding:20px;box-sizing:border-box;flex:1}
 header{text-align:center;margin-bottom:30px;animation:fadeIn 2s ease-in-out}
-h1{color:var(--primary-color);font-size:2.2em;text-shadow:0 0 10px rgba(255,215,0,0.5);margin-bottom:5px;letter-spacing:2px}
+h1{color:#ffd700;font-size:2.2em;text-shadow:0 0 10px rgba(255,215,0,0.5);margin-bottom:5px;letter-spacing:2px}
 .subtitle{font-size:0.9em;color:#aaa;font-style:italic}
-.oracle-box{
-    background:var(--panel-bg);
-    border:1px solid rgba(255,215,0,0.3);
-    border-radius:15px;padding:25px;
-    box-shadow:0 0 20px rgba(0,0,0,0.5),inset 0 0 15px rgba(255,215,0,0.05);
-    margin-bottom:30px;
-    backdrop-filter:blur(5px)
-}
-.intro{text-align:center;margin-bottom:25px;font-size:0.95em}
+.oracle-box{background:rgba(20,20,40,0.8);border:1px solid rgba(255,215,0,0.3);border-radius:15px;padding:25px;box-shadow:0 0 20px rgba(0,0,0,0.5),inset 0 0 15px rgba(255,215,0,0.05);margin-bottom:30px;backdrop-filter:blur(5px)}
+.intro{text-align:center;margin-bottom:25px;font-size:0.95em;color:#ccc}
 .form-group{margin-bottom:20px}
-label{display:block;margin-bottom:8px;color:var(--primary-color);font-size:0.9em}
-input,select{
-    width:100%;padding:12px;
-    background:rgba(0,0,0,0.5);
-    border:1px solid rgba(255,215,0,0.2);
-    border-radius:8px;color:#fff;
-    box-sizing:border-box;font-family:inherit;
-    transition:all 0.3s
-}
-input:focus,select:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 10px rgba(255,215,0,0.2)}
+label{display:block;margin-bottom:8px;color:#ffd700;font-size:0.9em}
+input,select{width:100%;padding:12px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#fff;box-sizing:border-box;font-family:inherit;transition:all 0.3s}
+input:focus,select:focus{outline:none;border-color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,0.2)}
 select option{background:#1a1a3a;color:#fff}
-button{
-    width:100%;padding:15px;
-    background:linear-gradient(45deg,#b8860b,#ffd700);
-    border:none;border-radius:8px;
-    color:#000;font-weight:bold;font-size:1.1em;
-    cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;margin-top:10px
-}
+button{width:100%;padding:15px;background:linear-gradient(45deg,#b8860b,#ffd700);border:none;border-radius:8px;color:#000;font-weight:bold;font-size:1.1em;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;margin-top:10px}
 button:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(255,215,0,0.4)}
-button:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-
 .loading{display:none;text-align:center;padding:40px}
-.spinner{width:40px;height:40px;border:3px solid rgba(255,215,0,0.2);border-top-color:var(--primary-color);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,215,0,0.2);border-top-color:#ffd700;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-
 .result-box{display:none;animation:fadeIn 0.8s ease-out}
 .bazi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin:20px 0}
 .bazi-cell{background:rgba(255,255,255,0.06);border-radius:8px;padding:10px 4px}
 .bazi-cell .pillar-label{font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px}
 .bazi-cell .gan{font-size:22px;font-weight:700;color:#fff}
-.bazi-cell .zhi{font-size:22px;font-weight:700;color:var(--primary-color);margin-bottom:2px}
+.bazi-cell .zhi{font-size:22px;font-weight:700;color:#ffd700;margin-bottom:2px}
 .bazi-cell .shi-shen{font-size:10px;color:#7ec8e3;line-height:1.3;margin-top:2px}
 .reading{background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:10px;padding:15px;margin:15px 0;font-size:0.9em;line-height:1.7;color:#ccc}
-.reading strong{color:var(--primary-color)}
-
-.pricing-section{margin-top:30px;text-align:center;animation:slideUp 0.5s ease-out forwards}
+.reading strong{color:#ffd700}
+.pricing-section{display:none;margin-top:30px;text-align:center;animation:slideUp 0.5s ease-out forwards}
 .pricing-section .hint{font-size:0.85em;color:#888;margin-bottom:15px}
-.tier{
-    background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
-    border-radius:10px;padding:15px;margin-bottom:12px;
-    cursor:pointer;transition:all 0.3s;
-    display:flex;justify-content:space-between;align-items:center
-}
-.tier:hover{background:rgba(255,215,0,0.1);border-color:var(--primary-color)}
-.tier-name{font-weight:bold;font-size:1em}
+.tier{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:15px;margin-bottom:12px;cursor:pointer;transition:all 0.3s;display:flex;justify-content:space-between;align-items:center}
+.tier:hover{background:rgba(255,215,0,0.1);border-color:#ffd700}
+.tier-name{font-weight:bold;font-size:1em;color:#e0e0e0}
 .tier-desc{font-size:0.8em;color:#888;margin-top:2px}
-.tier-price{color:var(--primary-color);font-size:1.2em;font-weight:bold}
-
-.payment-modal{
-    display:none;position:fixed;top:0;left:0;right:0;bottom:0;
-    background:rgba(0,0,0,0.8);z-index:1000;
-    justify-content:center;align-items:center}
-.payment-content{
-    background:var(--panel-bg);border:1px solid rgba(255,215,0,0.3);
-    border-radius:15px;padding:30px;max-width:380px;width:90%;
-    position:relative;backdrop-filter:blur(10px)}
-.payment-content h3{color:var(--primary-color);text-align:center;margin-bottom:15px}
+.tier-price{color:#ffd700;font-size:1.2em;font-weight:bold}
+.payment-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center}
+.payment-content{background:rgba(20,20,40,0.95);border:1px solid rgba(255,215,0,0.3);border-radius:15px;padding:30px;max-width:380px;width:90%;position:relative;backdrop-filter:blur(10px)}
+.payment-content h3{color:#ffd700;text-align:center;margin-bottom:15px}
 .qr-tabs{display:flex;gap:0;margin-bottom:15px;border-radius:8px;overflow:hidden}
 .qr-tab{flex:1;padding:10px;text-align:center;cursor:pointer;background:rgba(255,255,255,0.05);color:#888;font-size:13px;transition:all 0.3s}
-.qr-tab.active{background:rgba(255,215,0,0.15);color:var(--primary-color)}
+.qr-tab.active{background:rgba(255,215,0,0.15);color:#ffd700}
 .qr-code{display:none;text-align:center;margin:15px 0}
 .qr-code.active{display:block}
 .qr-code img{width:200px;height:200px;border-radius:8px;background:#fff;padding:10px}
 .eth-address{background:rgba(0,0,0,0.5);border-radius:6px;padding:10px;font-size:11px;color:#aaa;word-break:break-all;margin-bottom:8px;font-family:monospace}
-.close-btn{background:rgba(255,255,255,0.08);color:#888;margin-top:10px;padding:10px;font-size:0.85em}
-.close-btn:hover{background:rgba(255,255,255,0.15);box-shadow:none;transform:none}
+.close-btn{background:rgba(255,255,255,0.08);color:#888;margin-top:10px;padding:10px;font-size:0.85em;border:none;width:100%;border-radius:8px;cursor:pointer}
+.close-btn:hover{background:rgba(255,255,255,0.15)}
 footer{text-align:center;padding:30px 20px;color:#555;font-size:0.8em}
-footer .brand{font-size:0.75em;opacity:0.5;margin-top:4px}
-
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.stars{font-size:22px;margin:8px 0;color:var(--primary-color)}
-.result-level{font-size:20px;font-weight:700;color:var(--primary-color);margin-bottom:6px}
-.detail-section{margin-top:12px;text-align:left}
-.detail-item{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;color:rgba(255,255,255,0.6)}
+.stars{font-size:22px;margin:8px 0;color:#ffd700}
+.result-level{font-size:20px;font-weight:700;color:#ffd700;margin-bottom:6px}
 .convert-line{background:rgba(0,0,0,0.22);border:1px solid rgba(255,215,0,0.16);border-radius:10px;padding:10px 12px;color:rgba(255,255,255,0.72);font-size:13px;line-height:1.5;margin:0 0 12px;text-align:center}
-.convert-line strong{color:var(--primary-color)}
 </style>
 </head>
 <body>
 <div class="container">
 <header>
 <h1>✦ 六维天机 ✦</h1>
-<div class="subtitle">— 四柱八字 · 十神分析 · 公粮判定 —</div>
+<div class="subtitle">— 八字测公粮 · 一杯咖啡揭晓你的公粮命 —</div>
 </header>
 
 <div class="oracle-box" id="inputBox">
-<div class="intro">请输入生辰，推演你的命格磁场</div>
+<div class="intro">请输入生辰，推演你的公粮命格</div>
 <div class="row3">
 <div class="form-group"><label>年份</label><select id="year"></select></div>
 <div class="form-group"><label>月份</label><select id="month"></select></div>
@@ -136,22 +78,16 @@ footer .brand{font-size:0.75em;opacity:0.5;margin-top:4px}
 <div class="row2">
 <div class="form-group"><label>时辰</label><select id="hour">
 <option value="-1">未知</option>
-<option value="0">子时 23:00-00:59</option>
-<option value="1">丑时 01:00-02:59</option>
-<option value="2">寅时 03:00-04:59</option>
-<option value="3">卯时 05:00-06:59</option>
-<option value="4">辰时 07:00-08:59</option>
-<option value="5">巳时 09:00-10:59</option>
-<option value="6">午时 11:00-12:59</option>
-<option value="7">未时 13:00-14:59</option>
-<option value="8">申时 15:00-16:59</option>
-<option value="9">酉时 17:00-18:59</option>
-<option value="10">戌时 19:00-20:59</option>
-<option value="11">亥时 21:00-22:59</option>
+<option value="0">子时 23-01</option><option value="1">丑时 01-03</option>
+<option value="2">寅时 03-05</option><option value="3">卯时 05-07</option>
+<option value="4">辰时 07-09</option><option value="5">巳时 09-11</option>
+<option value="6">午时 11-13</option><option value="7">未时 13-15</option>
+<option value="8">申时 15-17</option><option value="9">酉时 17-19</option>
+<option value="10">戌时 19-21</option><option value="11">亥时 21-23</option>
 </select></div>
 <div class="form-group"><label>性别</label><select id="gender"><option value="male">男</option><option value="female">女</option></select></div>
 </div>
-<button onclick="startDivination()">✦ 推演天机 ✦</button>
+<button id="calcBtn" onclick="startDivination()">✦ 推演天机 ✦</button>
 </div>
 
 <div class="loading" id="loading">
@@ -163,9 +99,9 @@ footer .brand{font-size:0.75em;opacity:0.5;margin-top:4px}
 <div class="oracle-box" id="resultContent"></div>
 </div>
 
-<div class="pricing-section" id="pricing" style="display:none;margin-top:30px;text-align:center;animation:slideUp 0.5s ease-out forwards">
-<div style="font-size:0.9em;color:#aaa;margin-bottom:15px">— 八字测公粮 · 一杯咖啡即可揭晓 —</div>
-<div class="tier" onclick="showPayment('19.90')">
+<div class="pricing-section" id="pricing">
+<div class="hint">— 天机初现，深入需缘 —</div>
+<div class="tier" id="payTier" onclick="showPayment()">
 <div><div class="tier-name">八字测公粮</div><div class="tier-desc">四柱八字 · 十神分析 · 公粮判定</div></div>
 <div class="tier-price">¥19.90</div>
 </div>
@@ -174,29 +110,26 @@ footer .brand{font-size:0.75em;opacity:0.5;margin-top:4px}
 
 <div class="payment-modal" id="paymentModal">
 <div class="payment-content">
-<h3 id="payAmount" style="margin-top:0;">结缘: ¥19.90</h3>
+<h3>结缘: ¥19.90</h3>
 <p style="font-size:0.9em;color:#888;text-align:center">选择支付方式</p>
 <div class="qr-tabs">
-<div class="qr-tab active alipay" onclick="switchTab('alipay')">支付宝</div>
-<div class="qr-tab eth" onclick="switchTab('eth')">Ethereum (ETH/USDC)</div>
+<div class="qr-tab active" onclick="switchTab('alipay')">支付宝</div>
+<div class="qr-tab" onclick="switchTab('eth')">Ethereum</div>
 </div>
 <div class="qr-code active" id="qr-alipay">
-<img src="./alipay.jpg" alt="支付宝收款码" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'250\' height=\'250\'><rect width=\'250\' height=\'250\' fill=\'%23f0f0f0\'/><text x=\'50%\' y=\'50%\' font-size=\'16\' text-anchor=\'middle\' fill=\'%23666\'>请上传 alipay.jpg</text></svg>'">
+<img src="./alipay.jpg" alt="支付宝收款码" style="width:200px;height:200px;border-radius:8px;background:#fff;padding:10px">
 </div>
 <div class="qr-code" id="qr-eth">
-<img src="./eth.png" alt="ETH收款码" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'250\' height=\'250\'><rect width=\'250\' height=\'250\' fill=\'%23f0f0f0\'/><text x=\'50%\' y=\'50%\' font-size=\'16\' text-anchor=\'middle\' fill=\'%23666\'>请上传 eth.png</text></svg>'">
-</div>
-<div id="eth-address-box" style="display:none">
 <div class="eth-address">0xfc7501fdbe9e7f37dd1d468e1c726291a127d331</div>
-<button style="padding:5px 10px;font-size:0.8em;margin:0;width:auto" onclick="copyAddress()">复制地址</button>
+<button style="padding:5px 10px;font-size:0.8em;margin:5px auto;display:block;width:auto" onclick="copyAddress()">复制地址</button>
 </div>
-<button class="close-btn" onclick="closePayment()">稍后再说</button>
+<button class="close-btn" onclick="document.getElementById('paymentModal').style.display='none'">稍后再说</button>
 </div>
 </div>
 
 <footer>
-© 2026 EverDao设计出品<br>
-<span class="brand">底层算力支持: 六维AI命理引擎</span>
+© 2026 EverDao 出品<br>
+<span style="font-size:0.75em;opacity:0.5">八字测公粮 · 量化天机</span>
 </footer>
 
 <script>
@@ -726,29 +659,17 @@ function demo() {
 
 
 var _calType = 0;
+
 function initDateSelects() {
-  fillSelect(document.getElementById("year"), 1930, 2100, 1995, "\u5e74", false);
-  fillSelect(document.getElementById("month"), 1, 12, 10, "\u6708", true);
-  fillSelect(document.getElementById("day"), 1, 31, 12, "\u65e5", true);
+  fillSelect(document.getElementById("year"), 1930, 2100, 1995, "年", false);
+  fillSelect(document.getElementById("month"), 1, 12, 10, "月", true);
+  fillSelect(document.getElementById("day"), 1, 31, 12, "日", true);
 }
 function refreshDayOptions() {
-  var yIn = document.getElementById("year");
-  var mIn = document.getElementById("month");
-  var dIn = document.getElementById("day");
+  var yIn = document.getElementById("year"), mIn = document.getElementById("month"), dIn = document.getElementById("day");
   if (!yIn || !mIn || !dIn) return;
-  var y = parseInt(yIn.value) || 1995;
-  var m = parseInt(mIn.value) || 1;
-  var maxDay = getDateDayLimit(y, m);
-  var oldDay = parseInt(dIn.value) || 1;
-  fillSelect(dIn, 1, maxDay, Math.min(oldDay, maxDay), "\u65e5", true);
+  fillSelect(dIn, 1, getDateDayLimit(+yIn.value||1995, +mIn.value||1), Math.min(+dIn.value||1, 31), "日", true);
 }
-
-var DEMOS = [
-  {y: 1995, m: 10, d: 12, h: 10},
-  {y: 1988, m: 5, d: 12, h: 4},
-  {y: 2000, m: 8, d: 18, h: 11}
-];
-var di = 0;
 
 function startDivination() {
   var y = +document.getElementById("year").value;
@@ -756,112 +677,82 @@ function startDivination() {
   var d = +document.getElementById("day").value;
   var h = +document.getElementById("hour").value;
   var g = document.getElementById("gender").value;
-  if (!y || !m || !d) { alert("\u8bf7\u9009\u62e9\u5b8c\u6574\u65e5\u671f"); return; }
+  if (!y || !m || !d) { alert("请选择完整日期"); return; }
   
   document.getElementById("loading").style.display = "block";
   document.getElementById("resultBox").style.display = "none";
-  var p=document.getElementById("pricing");if(p){p.style.setProperty("display","none","important");};
+  document.getElementById("pricing").style.display = "none";
   
   setTimeout(function() {
     try {
       var b = getBazi(y, m, d, h >= 0 ? h * 2 + 1 : 6, 0);
       var r = judge(b);
       
-      var html = "<div style=\"text-align:center;margin-bottom:10px\"><div style=\"color:#ffd700;font-size:14px;letter-spacing:3px\">\u2606 \u56db\u67f1\u516b\u5b57 \u2606</div>";
-      html += "<div style=\"color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:10px\">" + (g === "male" ? "\u4e7e\u9020" : "\u5764\u9020") + " | " + b.sz.join(" ") + "</div></div>";
-      html += "<div class=\"bazi-grid\">";
-      var labels = ["\u5e74\u67f1", "\u6708\u67f1", "\u65e5\u67f1", "\u65f6\u67f1"];
+      var html = "<div style='text-align:center;margin-bottom:10px'><div style='color:#ffd700;font-size:14px;letter-spacing:3px'>✦ 四柱八字 ✦</div>";
+      html += "<div style='color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:10px'>" + (g === "male" ? "乾造" : "坤造") + " | " + b.sz.join(" ") + "</div></div>";
+      html += "<div class='bazi-grid'>";
+      var labels = ["年柱", "月柱", "日柱", "时柱"];
       for (var i = 0; i < 4; i++) {
-        html += "<div class=\"bazi-cell\"><div class=\"pillar-label\">" + labels[i] + "</div>";
-        html += "<div class=\"gan\">" + Gan[b.tg[i]] + "</div>";
-        html += "<div class=\"zhi\">" + Zhi[b.dz[i]] + "</div>";
+        html += "<div class='bazi-cell'><div class='pillar-label'>" + labels[i] + "</div>";
+        html += "<div class='gan'>" + Gan[b.tg[i]] + "</div>";
+        html += "<div class='zhi'>" + Zhi[b.dz[i]] + "</div>";
         if (r.pillars[i] && r.pillars[i].shiShens) {
-          html += "<div class=\"shi-shen\">" + r.pillars[i].shiShens.slice(0,3).join("<br>") + "</div>";
+          html += "<div class='shi-shen'>" + r.pillars[i].shiShens.slice(0,3).join("<br>") + "</div>";
         }
         html += "</div>";
       }
       html += "</div>";
       
-      // Reading
       var reading = "";
       if (r.level >= 2) {
-        reading = "\u5b98\u661f\u5f97\u5730\uff0c\u5929\u751f\u516c\u95e8\u547d\u3002\u4f60\u7684\u547d\u683c\u4e2d\u5b98\u6740\u901a\u6839\uff0c\u5929\u8d4b\u5f53\u5b98\u4ece\u653f\u7684\u6f5c\u8d28\uff0c\u7a7f\u6234\u6b63\u8863\u7f51\u7f51\u53ef\u4ee5\u8bf4\u662f\u8d70\u5411\u4f60\u547d\u8fd0\u767b\u9876\u7684\u6700\u4f73\u8def\u5f84\u3002";
+        reading = "官星得地，天生公门命。你的命格中官杀通根，天赋当官从政的潜质，穿戴正衣网网可以说是走向你命运登顶的最佳路径。";
       } else if (r.level >= 1) {
-        reading = "\u5b98\u661f\u504f\u5f31\uff0c\u4f46\u6b63\u504f\u5b98\u6740\u7686\u6709\u663e\u73b0\uff0c\u9700\u5927\u8fd0\u63d0\u62d4\u65b9\u53ef\u5165\u516c\u95e8\u3002\u6709\u4ece\u653f\u7684\u57fa\u7840\uff0c\u4f46\u9700\u627e\u51c6\u65f6\u673a\u3001\u9009\u5bf9\u65b9\u5411\uff0c\u5426\u5219\u5b98\u8def\u591a\u6ce2\u6298\u3002";
+        reading = "官星偏弱，但正偏官杀皆有显现，需大运提拔方可入公门。有从政的基础，但需找准时机、选对方向，否则官路多波折。";
       } else {
-        reading = "\u547d\u5c40\u4e2d\u5b98\u6740\u4e0d\u663e\uff0c\u5347\u8fc1\u53d1\u5c55\u53ef\u80fd\u66f4\u4f9d\u8d56\u540e\u5929\u52aa\u529b\u548c\u5927\u8fd0\u5e26\u52a8\u3002\u4f60\u7684\u4f18\u52bf\u4e0d\u5728\u516c\u95e8\uff0c\u800c\u5728\u5176\u4ed6\u9886\u57df\uff0c\u4e0d\u5fc5\u6267\u7740\u4e8e\u201c\u5403\u516c\u7cae\u201d\u8fd9\u4e00\u6761\u8def\u3002";
+        reading = "命局中官杀不显，晋升发展可能更依赖后天努力和大运带动。你的优势不在公门，而在其他领域，不必执着于"吃公粮"这一条路。";
       }
       
-      html += "<div class=\"reading\"><strong>\u2606 \u547d\u76d8\u521d\u89e3 \u2606</strong><br><br>" + reading + "</div>";
+      html += "<div class='reading'><strong>✦ 命盘初解 ✦</strong><br><br>" + reading + "</div>";
+      html += "<div class='result-level'>" + (r.level >= 2 ? "行政公务员编制" : r.level >= 1 ? "事业单位或企业管理" : "公门缘分较薄") + "</div>";
+      html += "<div class='stars'>" + (r.level >= 2 ? "★★★★★" : r.level >= 1 ? "★★★☆☆" : "★★☆☆☆") + "</div>";
       
-      html += "<div class=\"result-level\">" + (r.level >= 2 ? "\u884c\u653f\u516c\u52a1\u5458\u7f16\u5236" : r.level >= 1 ? "\u4e8b\u4e1a\u5355\u4f4d\u6216\u4f01\u4e1a\u7ba1\u7406" : "\u516c\u95e8\u7f18\u5206\u8f83\u8584") + "</div>";
-      html += "<div class=\"stars\">" + (r.level >= 2 ? "\u2605\u2605\u2605\u2605\u2605" : r.level >= 1 ? "\u2605\u2605\u2605\u2606\u2606" : "\u2605\u2605\u2606\u2606\u2606") + "</div>";
-      
-      window._fullResult = html; document.getElementById("resultContent").innerHTML = html;
+      document.getElementById("resultContent").innerHTML = html;
       document.getElementById("loading").style.display = "none";
       document.getElementById("resultBox").style.display = "block";
       
+      // Show pricing after result
       setTimeout(function() {
-        var p=document.getElementById("pricing");if(p){p.style.setProperty("display","block","important");};
-      }, 1500);
-      // Fail-safe: check again after 3s
-      setTimeout(function() {
-        var p=document.getElementById("pricing");
-        if(p && p.style.display !== "block") p.style.setProperty("display","block","important");
-      }, 3000);
+        document.getElementById("pricing").style.display = "block";
+      }, 1000);
       
     } catch(e) {
       document.getElementById("loading").style.display = "none";
-      alert("\u8ba1\u7b97\u5f02\u5e38\uff1a" + e.message);
+      alert("计算异常：" + e.message);
     }
-  }, 2000);
-}
-
-function switchTab(type) {
-  document.querySelectorAll(".qr-tab").forEach(function(t) { t.classList.remove("active"); });
-  document.querySelectorAll(".qr-code").forEach(function(c) { c.classList.remove("active"); });
-  if(type === "alipay") {
-    document.querySelector(".qr-tab.alipay").classList.add("active");
-    document.getElementById("qr-alipay").classList.add("active");
-    document.getElementById("eth-address-box").style.display = "none";
-  } else {
-    document.querySelector(".qr-tab.eth").classList.add("active");
-    document.getElementById("qr-eth").classList.add("active");
-    document.getElementById("eth-address-box").style.display = "block";
-  }
+  }, 1500);
 }
 
-
-function copyAddress() {
-  navigator.clipboard.writeText("0xfc7501fdbe9e7f37dd1d468e1c726291a127d331").then(function() {
-    alert("\u4ee5\u592a\u574a\u5730\u5740\u5df2\u590d\u5236\uff0c\u8bf7\u4f7f\u7528\u52a0\u5bc6\u94b1\u5305\u8f6c\u8d26");
-  });
-}
-
-
-function showPayment(price) {
-  document.getElementById("payAmount").innerText = "结缘法金: ¥" + price;
+function showPayment() {
   document.getElementById("paymentModal").style.display = "flex";
 }
-function closePayment() {
-  document.getElementById("paymentModal").style.display = "none";
-}
+
 function switchTab(type) {
-  document.querySelectorAll(".qr-tab").forEach(function(t) { t.classList.remove("active"); });
-  document.querySelectorAll(".qr-code").forEach(function(c) { c.classList.remove("active"); });
-  if(type === "alipay") {
-    document.querySelector(".qr-tab.alipay").classList.add("active");
+  var tabs = document.querySelectorAll(".qr-tab");
+  var codes = document.querySelectorAll(".qr-code");
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+  for (var i = 0; i < codes.length; i++) codes[i].classList.remove("active");
+  if (type === "alipay") {
+    tabs[0].classList.add("active");
     document.getElementById("qr-alipay").classList.add("active");
-    document.getElementById("eth-address-box").style.display = "none";
   } else {
-    document.querySelector(".qr-tab.eth").classList.add("active");
+    tabs[1].classList.add("active");
     document.getElementById("qr-eth").classList.add("active");
-    document.getElementById("eth-address-box").style.display = "block";
   }
 }
+
 function copyAddress() {
   navigator.clipboard.writeText("0xfc7501fdbe9e7f37dd1d468e1c726291a127d331").then(function() {
-    alert("以太坊地址已复制，请使用加密钱包转账");
+    alert("以太坊地址已复制");
   });
 }
 
@@ -870,34 +761,4 @@ window.onload = function() {
 };
 </script>
 </body>
-</html
-<div class="pricing-section" id="pricing" style="display:none;margin-top:30px;text-align:center;animation:slideUp 0.5s ease-out forwards">
-<div style="font-size:0.9em;color:#aaa;margin-bottom:15px">— 八字测公粮 · 一杯咖啡即可揭晓 —</div>
-<div class="tier" onclick="showPayment('19.90')">
-<div><div class="tier-name">八字测公粮</div><div class="tier-desc">四柱八字 · 十神分析 · 公粮判定</div></div>
-<div class="tier-price">¥19.90</div>
-</div>
-</div>
-
-<div class="payment-modal" id="paymentModal">
-<div class="payment-content">
-<h3 id="payAmount" style="margin-top:0;">结缘: ¥19.90</h3>
-<p style="font-size:0.9em;color:#888;text-align:center">选择支付方式</p>
-<div class="qr-tabs">
-<div class="qr-tab active alipay" onclick="switchTab('alipay')">支付宝</div>
-<div class="qr-tab eth" onclick="switchTab('eth')">Ethereum (ETH/USDC)</div>
-</div>
-<div class="qr-code active" id="qr-alipay">
-<img src="./alipay.jpg" alt="支付宝收款码" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'250\' height=\'250\'><rect width=\'250\' height=\'250\' fill=\'%23f0f0f0\'/><text x=\'50%\' y=\'50%\' font-size=\'16\' text-anchor=\'middle\' fill=\'%23666\'>请上传 alipay.jpg</text></svg>'">
-</div>
-<div class="qr-code" id="qr-eth">
-<img src="./eth.png" alt="ETH收款码" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'250\' height=\'250\'><rect width=\'250\' height=\'250\' fill=\'%23f0f0f0\'/><text x=\'50%\' y=\'50%\' font-size=\'16\' text-anchor=\'middle\' fill=\'%23666\'>请上传 eth.png</text></svg>'">
-</div>
-<div id="eth-address-box" style="display:none">
-<div class="eth-address">0xfc7501fdbe9e7f37dd1d468e1c726291a127d331</div>
-<button style="padding:5px 10px;font-size:0.8em;margin:0;width:auto" onclick="copyAddress()">复制地址</button>
-</div>
-<button class="close-btn" onclick="closePayment()">稍后再说</button>
-</div>
-</div>
->
+</html>
