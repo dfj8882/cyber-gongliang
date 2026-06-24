@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>六维天机 - 八字测公粮</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#050510;background-image:radial-gradient(circle at 50% 50%,#1a1a3a 0%,#050510 100%);color:#e0e0e0;line-height:1.6;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.container{width:100%;max-width:600px;padding:20px;box-sizing:border-box;flex:1}
+header{text-align:center;margin-bottom:30px;animation:fadeIn 2s ease-in-out}
+h1{color:#ffd700;font-size:2.2em;text-shadow:0 0 10px rgba(255,215,0,0.5);margin-bottom:5px;letter-spacing:2px}
+.subtitle{font-size:0.9em;color:#aaa;font-style:italic}
+.oracle-box{background:rgba(20,20,40,0.8);border:1px solid rgba(255,215,0,0.3);border-radius:15px;padding:25px;box-shadow:0 0 20px rgba(0,0,0,0.5),inset 0 0 15px rgba(255,215,0,0.05);margin-bottom:30px;backdrop-filter:blur(5px)}
+.intro{text-align:center;margin-bottom:25px;font-size:0.95em;color:#ccc}
+.form-group{margin-bottom:20px}
+label{display:block;margin-bottom:8px;color:#ffd700;font-size:0.9em}
+input,select{width:100%;padding:12px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#fff;box-sizing:border-box;font-family:inherit;transition:all 0.3s}
+input:focus,select:focus{outline:none;border-color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,0.2)}
+select option{background:#1a1a3a;color:#fff}
+button{width:100%;padding:15px;background:linear-gradient(45deg,#b8860b,#ffd700);border:none;border-radius:8px;color:#000;font-weight:bold;font-size:1.1em;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;margin-top:10px}
+button:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(255,215,0,0.4)}
+.loading{display:none;text-align:center;padding:40px}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,215,0,0.2);border-top-color:#ffd700;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.result-box{display:none;animation:fadeIn 0.8s ease-out}
+.bazi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin:20px 0}
+.bazi-cell{background:rgba(255,255,255,0.06);border-radius:8px;padding:10px 4px}
+.bazi-cell .pillar-label{font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px}
+.bazi-cell .gan{font-size:22px;font-weight:700;color:#fff}
+.bazi-cell .zhi{font-size:22px;font-weight:700;color:#ffd700;margin-bottom:2px}
+.bazi-cell .shi-shen{font-size:10px;color:#7ec8e3;line-height:1.3;margin-top:2px}
+.reading{background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:10px;padding:15px;margin:15px 0;font-size:0.9em;line-height:1.7;color:#ccc}
+.reading strong{color:#ffd700}
+.pricing-section{display:none;margin-top:30px;text-align:center;animation:slideUp 0.5s ease-out forwards}
+.pricing-section .hint{font-size:0.85em;color:#888;margin-bottom:15px}
+.tier{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:15px;margin-bottom:12px;cursor:pointer;transition:all 0.3s;display:flex;justify-content:space-between;align-items:center}
+.tier:hover{background:rgba(255,215,0,0.1);border-color:#ffd700}
+.tier-name{font-weight:bold;font-size:1em;color:#e0e0e0}
+.tier-desc{font-size:0.8em;color:#888;margin-top:2px}
+.tier-price{color:#ffd700;font-size:1.2em;font-weight:bold}
+.payment-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center}
+.payment-content{background:rgba(20,20,40,0.95);border:1px solid rgba(255,215,0,0.3);border-radius:15px;padding:30px;max-width:380px;width:90%;position:relative;backdrop-filter:blur(10px)}
+.payment-content h3{color:#ffd700;text-align:center;margin-bottom:15px}
+.qr-tabs{display:flex;gap:0;margin-bottom:15px;border-radius:8px;overflow:hidden}
+.qr-tab{flex:1;padding:10px;text-align:center;cursor:pointer;background:rgba(255,255,255,0.05);color:#888;font-size:13px;transition:all 0.3s}
+.qr-tab.active{background:rgba(255,215,0,0.15);color:#ffd700}
+.qr-code{display:none;text-align:center;margin:15px 0}
+.qr-code.active{display:block}
+.qr-code img{width:200px;height:200px;border-radius:8px;background:#fff;padding:10px}
+.eth-address{background:rgba(0,0,0,0.5);border-radius:6px;padding:10px;font-size:11px;color:#aaa;word-break:break-all;margin-bottom:8px;font-family:monospace}
+.close-btn{background:rgba(255,255,255,0.08);color:#888;margin-top:10px;padding:10px;font-size:0.85em;border:none;width:100%;border-radius:8px;cursor:pointer}
+.close-btn:hover{background:rgba(255,255,255,0.15)}
+footer{text-align:center;padding:30px 20px;color:#555;font-size:0.8em}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.stars{font-size:22px;margin:8px 0;color:#ffd700}
+.result-level{font-size:20px;font-weight:700;color:#ffd700;margin-bottom:6px}
+.convert-line{background:rgba(0,0,0,0.22);border:1px solid rgba(255,215,0,0.16);border-radius:10px;padding:10px 12px;color:rgba(255,255,255,0.72);font-size:13px;line-height:1.5;margin:0 0 12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>✦ 六维天机 ✦</h1>
+<div class="subtitle">— 八字测公粮 · 一杯咖啡揭晓你的公粮命 —</div>
+</header>
+
+<div class="oracle-box" id="inputBox">
+<div class="intro">请输入生辰，推演你的公粮命格</div>
+<div class="row3">
+<div class="form-group"><label>年份</label><select id="year"></select></div>
+<div class="form-group"><label>月份</label><select id="month"></select></div>
+<div class="form-group"><label>日期</label><select id="day"></select></div>
+</div>
+<div class="row2">
+<div class="form-group"><label>时辰</label><select id="hour">
+<option value="-1">未知</option>
+<option value="0">子时 23-01</option><option value="1">丑时 01-03</option>
+<option value="2">寅时 03-05</option><option value="3">卯时 05-07</option>
+<option value="4">辰时 07-09</option><option value="5">巳时 09-11</option>
+<option value="6">午时 11-13</option><option value="7">未时 13-15</option>
+<option value="8">申时 15-17</option><option value="9">酉时 17-19</option>
+<option value="10">戌时 19-21</option><option value="11">亥时 21-23</option>
+</select></div>
+<div class="form-group"><label>性别</label><select id="gender"><option value="male">男</option><option value="female">女</option></select></div>
+</div>
+<button id="calcBtn" onclick="startDivination()">✦ 推演天机 ✦</button>
+</div>
+
+<div class="loading" id="loading">
+<div class="spinner"></div>
+<div>正在连接六维磁场...</div>
+</div>
+
+<div class="result-box" id="resultBox">
+<div class="oracle-box" id="resultContent"></div>
+</div>
+
+<div class="pricing-section" id="pricing">
+<div class="hint">— 天机初现，深入需缘 —</div>
+<div class="tier" id="payTier" onclick="showPayment()">
+<div><div class="tier-name">八字测公粮</div><div class="tier-desc">四柱八字 · 十神分析 · 公粮判定</div></div>
+<div class="tier-price">¥19.90</div>
+</div>
+</div>
+</div>
+
+<div class="payment-modal" id="paymentModal">
+<div class="payment-content">
+<h3>结缘: ¥19.90</h3>
+<p style="font-size:0.9em;color:#888;text-align:center">选择支付方式</p>
+<div class="qr-tabs">
+<div class="qr-tab active" onclick="switchTab('alipay')">支付宝</div>
+<div class="qr-tab" onclick="switchTab('eth')">Ethereum</div>
+</div>
+<div class="qr-code active" id="qr-alipay">
+<img src="./alipay.jpg" alt="支付宝收款码" style="width:200px;height:200px;border-radius:8px;background:#fff;padding:10px">
+</div>
+<div class="qr-code" id="qr-eth">
+<div class="eth-address">0xfc7501fdbe9e7f37dd1d468e1c726291a127d331</div>
+<button style="padding:5px 10px;font-size:0.8em;margin:5px auto;display:block;width:auto" onclick="copyAddress()">复制地址</button>
+</div>
+<button class="close-btn" onclick="document.getElementById('paymentModal').style.display='none'">稍后再说</button>
+</div>
+</div>
+
+<footer>
+© 2026 EverDao 出品<br>
+<span style="font-size:0.75em;opacity:0.5">八字测公粮 · 量化天机</span>
+</footer>
+
+<script>
+
+var Gan=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+var Zhi=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+var CANG_GAN={'子':['癸'],'丑':['己','癸','辛'],'寅':['甲','丙','戊'],'卯':['乙'],'辰':['戊','乙','癸'],'巳':['丙','庚','戊'],'午':['丁','己'],'未':['己','丁','乙'],'申':['庚','壬','戊'],'酉':['辛'],'戌':['戊','辛','丁'],'亥':['壬','甲']};
+
+// 二十四节气近似时间（分钟），用于判断年柱/月柱交节边界。
+var termInfo = [0,21208,42467,63836,85337,107014,128867,150921,173149,195551,218072,240693,263343,285989,308563,331033,353350,375494,397447,419210,440795,462224,483532,504758];
+
+function getTermDay(y, n) {
+  var offDate = new Date((31556925974.7 * (y - 1890) + termInfo[n] * 60000) + Date.UTC(1890, 0, 5, 16, 2, 31));
+  return offDate.getUTCDate();
+}
+
+var lunarMonthNames = ['正月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+var lunarDayNames = ['初一','初二','初三','初四','初五','初六','初七','初八','初九','初十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
+var minLunarYear = 1890;
+var maxLunarYear = 2100;
+// 农历数据：[闰月(0=无), 正月初一公历月, 正月初一公历日, 月份大小二进制]，覆盖 1890-2100。
+var lunarInfo = [
+  [2,1,21,22184],[0,2,9,21936],[6,1,30,9656],[0,2,17,9584],[0,2,6,21168],[5,1,26,43344],[0,2,13,59728],[0,2,2,27296],[3,1,22,44368],[0,2,10,43856],
+  [8,1,30,19304],[0,2,19,19168],[0,2,8,42352],[5,1,29,21096],[0,2,16,53856],[0,2,4,55632],[4,1,25,27304],[0,2,13,22176],[0,2,2,39632],[2,1,22,19176],
+  [0,2,10,19168],[6,1,30,42200],[0,2,18,42192],[0,2,6,53840],[5,1,26,54568],[0,2,14,46400],[0,2,3,54944],[2,1,23,38608],[0,2,11,38320],[7,2,1,18872],
+  [0,2,20,18800],[0,2,8,42160],[5,1,28,45656],[0,2,16,27216],[0,2,5,27968],[4,1,24,44456],[0,2,13,11104],[0,2,2,38256],[2,1,23,18808],[0,2,10,18800],
+  [6,1,30,25776],[0,2,17,54432],[0,2,6,59984],[5,1,26,27976],[0,2,14,23248],[0,2,4,11104],[3,1,24,37744],[0,2,11,37600],[7,1,31,51560],[0,2,19,51536],
+  [0,2,8,54432],[6,1,27,55888],[0,2,15,46416],[0,2,5,22176],[4,1,25,43736],[0,2,13,9680],[0,2,2,37584],[2,1,22,51544],[0,2,10,43344],[7,1,29,46248],
+  [0,2,17,27808],[0,2,6,46416],[5,1,27,21928],[0,2,14,19872],[0,2,3,42416],[3,1,24,21176],[0,2,12,21168],[8,1,31,43344],[0,2,18,59728],[0,2,8,27296],
+  [6,1,28,44368],[0,2,15,43856],[0,2,5,19296],[4,1,25,42352],[0,2,13,42352],[0,2,2,21088],[3,1,21,59696],[0,2,9,55632],[7,1,30,23208],[0,2,17,22176],
+  [0,2,6,38608],[5,1,27,19176],[0,2,15,19152],[0,2,3,42192],[4,1,23,53864],[0,2,11,53840],[8,1,31,54568],[0,2,18,46400],[0,2,7,46752],[6,1,28,38608],
+  [0,2,16,38320],[0,2,5,18864],[4,1,25,42168],[0,2,13,42160],[10,2,2,45656],[0,2,20,27216],[0,2,9,27968],[6,1,29,44448],[0,2,17,43872],[0,2,6,38256],
+  [5,1,27,18808],[0,2,15,18800],[0,2,4,25776],[3,1,23,27216],[0,2,10,59984],[8,1,31,27432],[0,2,19,23232],[0,2,7,43872],[5,1,28,37736],[0,2,16,37600],
+  [0,2,5,51552],[4,1,24,54440],[0,2,12,54432],[0,2,1,55888],[2,1,22,23208],[0,2,9,22176],[7,1,29,43736],[0,2,18,9680],[0,2,7,37584],[5,1,26,51544],
+  [0,2,14,43344],[0,2,3,46240],[4,1,23,46416],[0,2,10,44368],[9,1,31,21928],[0,2,19,19360],[0,2,8,42416],[6,1,28,21176],[0,2,16,21168],[0,2,5,43312],
+  [4,1,25,29864],[0,2,12,27296],[0,2,1,44368],[2,1,22,19880],[0,2,10,19296],[6,1,29,42352],[0,2,17,42208],[0,2,6,53856],[5,1,26,59696],[0,2,13,54576],
+  [0,2,3,23200],[3,1,23,27472],[0,2,11,38608],[11,1,31,19176],[0,2,19,19152],[0,2,8,42192],[6,1,28,53848],[0,2,15,53840],[0,2,4,54560],[5,1,24,55968],
+  [0,2,12,46496],[0,2,1,22224],[2,1,22,19160],[0,2,10,18864],[7,1,30,42168],[0,2,17,42160],[0,2,6,43600],[5,1,26,46376],[0,2,14,27936],[0,2,2,44448],
+  [3,1,23,21936],[0,2,11,37744],[8,2,1,18808],[0,2,19,18800],[0,2,8,25776],[6,1,28,27216],[0,2,15,59984],[0,2,4,27424],[4,1,24,43872],[0,2,12,43744],
+  [0,2,2,37600],[3,1,21,51568],[0,2,9,51552],[7,1,29,54440],[0,2,17,54432],[0,2,5,55888],[5,1,26,23208],[0,2,14,22176],[0,2,3,42704],[4,1,23,21224],
+  [0,2,11,21200],[8,1,31,43352],[0,2,19,43344],[0,2,7,46240],[6,1,27,46416],[0,2,15,44368],[0,2,5,21920],[4,1,24,42448],[0,2,12,42416],[0,2,2,21168],
+  [3,1,22,43320],[0,2,9,26928],[7,1,29,29336],[0,2,17,27296],[0,2,6,44368],[5,1,26,19880],[0,2,14,19296],[0,2,3,42352],[4,1,24,21104],[0,2,10,53856],
+  [8,1,30,59696],[0,2,18,54560],[0,2,7,55968],[6,1,27,27472],[0,2,15,22224],[0,2,5,19168],[4,1,25,42216],[0,2,12,42192],[0,2,1,53584],[2,1,21,55592],
+  [0,2,9,54560]
+];
+
+function getLeapMonth(lY) {
+  if (lY < minLunarYear || lY > maxLunarYear) return 0;
+  return lunarInfo[lY - minLunarYear][0];
+}
+
+function getLunarYearDays(lY) {
+  if (lY < minLunarYear || lY > maxLunarYear) throw new Error('农历年份超出支持范围：' + minLunarYear + '-' + maxLunarYear);
+  var row = lunarInfo[lY - minLunarYear];
+  var leap = row[0];
+  var bits = row[3].toString(2).split('');
+  while (bits.length < 16) bits.unshift('0');
+  var len = leap ? 13 : 12;
+  var monthDays = [];
+  var total = 0;
+  for (var i = 0; i < len; i++) {
+    var md = bits[i] === '1' ? 30 : 29;
+    monthDays.push(md);
+    total += md;
+  }
+  return {total: total, monthDays: monthDays};
+}
+
+function lunarMonthToIndex(lY, lM, isLeap) {
+  var leap = getLeapMonth(lY);
+  if (lM < 1 || lM > 12) throw new Error('农历月份必须在1-12之间。');
+  if (isLeap) {
+    if (leap !== lM) throw new Error(lY + '年只有闰' + leap + '月，请重新选择闰月。');
+    return lM;
+  }
+  return leap && lM > leap ? lM : lM - 1;
+}
+
+function lunarIndexToMonth(lY, monthIndex) {
+  var leap = getLeapMonth(lY);
+  if (leap && monthIndex === leap) return {month: leap, isLeap: true};
+  if (leap && monthIndex > leap) return {month: monthIndex, isLeap: false};
+  return {month: monthIndex + 1, isLeap: false};
+}
+
+function solarToLunar(sY, sM, sD) {
+  var solar = new Date(Date.UTC(sY, sM - 1, sD));
+  if (solar.getUTCFullYear() !== sY || solar.getUTCMonth() + 1 !== sM || solar.getUTCDate() !== sD) {
+    throw new Error('阳历日期不存在，请重新选择。');
+  }
+  var row = lunarInfo[sY - minLunarYear];
+  if (!row) throw new Error('阳历年份超出支持范围：' + minLunarYear + '-' + maxLunarYear);
+  var zheng = Date.UTC(sY, row[1] - 1, row[2]);
+  var diff = Math.floor((solar.getTime() - zheng) / 86400000);
+  var lunarYear = diff >= 0 ? sY : sY - 1;
+  if (diff < 0) {
+    var prevRow = lunarInfo[lunarYear - minLunarYear];
+    if (!prevRow) throw new Error('阳历年份超出支持范围。');
+    zheng = Date.UTC(lunarYear, prevRow[1] - 1, prevRow[2]);
+    diff = Math.floor((solar.getTime() - zheng) / 86400000);
+  }
+  var yd = getLunarYearDays(lunarYear);
+  var monthIndex = 0;
+  while (monthIndex < yd.monthDays.length && diff >= yd.monthDays[monthIndex]) {
+    diff -= yd.monthDays[monthIndex];
+    monthIndex++;
+  }
+  var lm = lunarIndexToMonth(lunarYear, monthIndex);
+  var day = diff + 1;
+  var monthName = (lm.isLeap ? '闰' : '') + lunarMonthNames[lm.month - 1];
+  return {
+    lunarYear: lunarYear,
+    lunarMonth: lm.month,
+    lunarDay: day,
+    lunarMonthName: monthName,
+    lunarDayName: lunarDayNames[day - 1] || (day + '日'),
+    GanZhiYear: Gan[((lunarYear - 4) % 10 + 10) % 10] + Zhi[((lunarYear - 4) % 12 + 12) % 12],
+    lunarLeapMonth: getLeapMonth(lunarYear),
+    isLeapMonth: lm.isLeap
+  };
+}
+
+function lunarToSolar(lY, lM, lD, isLeap) {
+  var row = lunarInfo[lY - minLunarYear];
+  if (!row) throw new Error('农历年份超出支持范围：' + minLunarYear + '-' + maxLunarYear);
+  var yd = getLunarYearDays(lY);
+  var monthIndex = lunarMonthToIndex(lY, lM, !!isLeap);
+  var maxDay = yd.monthDays[monthIndex];
+  if (lD < 1 || lD > maxDay) {
+    throw new Error('农历 ' + lY + '年' + (isLeap ? '闰' : '') + lM + '月只有' + maxDay + '天。');
+  }
+  var offset = lD - 1;
+  for (var i = 0; i < monthIndex; i++) offset += yd.monthDays[i];
+  var solarMs = Date.UTC(lY, row[1] - 1, row[2]) + offset * 86400000;
+  var d = new Date(solarMs);
+  return {year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate()};
+}
+
+function getBazi(y, m, d, h, min) {
+  var baseDate = new Date(y, m - 1, d, h, min);
+  // 1. 考虑23点晚子时前移进位逻辑
+  if (h >= 23) {
+    baseDate.setTime(baseDate.getTime() + 24 * 3600 * 1000);
+  }
+  var cy = baseDate.getFullYear();
+  var cm = baseDate.getMonth() + 1;
+  var cd = baseDate.getDate();
+
+  // 2. 年柱卡点：以立春为界，23点后已进到次日时也同步参与判断。
+  var yearNum = cy;
+  var liChunDay = getTermDay(cy, 2);
+  if (cm < 2 || (cm === 2 && cd < liChunDay)) {
+    yearNum = cy - 1;
+  }
+  var ygz = ((yearNum - 4) % 60 + 60) % 60;
+  var yTG = ygz % 10, yDZ = ygz % 12;
+
+  // 3. 月柱卡点：以十二节为界，立春起寅月，小寒起丑月。
+  var jieDay = getTermDay(cy, (cm - 1) * 2);
+  var targetMonth = (cd >= jieDay) ? cm : cm - 1;
+  if (targetMonth === 0) {
+    targetMonth = 12;
+    yearNum = cy - 1;
+  }
+  var monthOffset = (targetMonth + 10) % 12; // 寅月=0，卯月=1...丑月=11
+  var mDZ = (monthOffset + 2) % 12;
+  var wuHu = [2, 4, 6, 8, 0]; 
+  var mTG = (wuHu[yTG % 5] + monthOffset) % 10;
+
+  // 4. 日柱排盘：以1970-01-01辛巳日（第17位）进行绝对天数递增模60滚动。
+  var dateUtc = Date.UTC(cy, cm - 1, cd);
+  var baseUtc = Date.UTC(1970, 0, 1); 
+  var diffDays = Math.floor((dateUtc - baseUtc) / 86400000);
+  var dgz = (diffDays + 17) % 60;
+  if (dgz < 0) dgz += 60;
+  var dTG = dgz % 10, dDZ = dgz % 12;
+
+  // 5. 时柱排盘：结合日干通过“五鼠遁公诀”顺推
+  var shiZhiIdx = Math.floor((h + 1) / 2) % 12;
+  var hDZ = shiZhiIdx;
+  var wuShuOffsets = [0, 2, 4, 6, 8]; 
+  var hTG = (wuShuOffsets[dTG % 5] + shiZhiIdx) % 10;
+
+  return {
+    tg: [yTG, mTG, dTG, hTG],
+    dz: [yDZ, mDZ, dDZ, hDZ],
+    sz: [Gan[yTG]+Zhi[yDZ], Gan[mTG]+Zhi[mDZ], Gan[dTG]+Zhi[dDZ], Gan[hTG]+Zhi[hDZ]]
+  };
+}
+
+function getSS(rg, og) {
+  if (og === rg) return '比肩';
+  var yinYang = [0,1,0,1,0,1,0,1,0,1];
+  var ry = yinYang[rg], oy = yinYang[og];
+  var fuxingRG = Math.floor(rg/2); // 0木 1火 2土 3金 4水
+  var fuxingOG = Math.floor(og/2);
+  
+  if (fuxingRG === fuxingOG) return ry === oy ? '比肩' : '劫财';
+  if ((fuxingOG === 4 && fuxingRG === 0) || (fuxingOG === fuxingRG - 1)) return ry === oy ? '偏印' : '正印';
+  if (((rg===0||rg===1)&&(og===6||og===7)) || ((rg===2||rg===3)&&(og===8||og===9)) || ((rg===4||rg===5)&&(og===0||og===1)) || ((rg===6||rg===7)&&(og===2||og===3)) || ((rg===8||rg===9)&&(og===4||og===5))) {
+    return ry === oy ? '七杀' : '正官';
+  }
+  if ((fuxingRG === 1 && fuxingOG === 3) || (fuxingRG === 3 && fuxingOG === 0) || (fuxingRG === 0 && fuxingOG === 2) || (fuxingRG === 2 && fuxingOG === 4) || (fuxingRG === 4 && fuxingOG === 1)) return ry === oy ? '偏财' : '正财';
+  if ((fuxingRG === 4 && fuxingOG === 0) || (fuxingRG === fuxingOG - 1)) return ry === oy ? '食神' : '伤官';
+  return '比肩';
+}
+
+function judge(bazi) {
+  var rg = bazi.tg[2];
+  var pillars = [];
+  var names = ['年柱','月柱','日柱','时柱'];
+  
+  for(var i=0; i<4; i++) {
+    var g = bazi.tg[i];
+    var z = bazi.dz[i];
+    var zhiName = Zhi[z];
+    var cg = CANG_GAN[zhiName] || [];
+    var ag = [g].concat(cg.map(function(c){ return Gan.indexOf(c); }));
+    var ss = ag.map(function(g2){ return getSS(rg, g2); });
+    var hasGuan = ss.indexOf('正官') >= 0 || ss.indexOf('七杀') >= 0;
+    
+    pillars.push({
+      name: names[i],
+      zone: i < 2 ? 'away' : 'home',
+      gan: Gan[g],
+      zhi: zhiName,
+      cangs: cg,
+      shiShens: ss,
+      hasGuan: hasGuan
+    });
+  }
+  
+  var homeHas = pillars[2].hasGuan || pillars[3].hasGuan;
+  var awayHas = pillars[0].hasGuan || pillars[1].hasGuan;
+  var yuelingGuan = pillars[1].shiShens.slice(1).indexOf('正官') >= 0 || pillars[1].shiShens.slice(1).indexOf('七杀') >= 0;
+  var shizhiGuan = pillars[3].shiShens.slice(1).indexOf('正官') >= 0 || pillars[3].shiShens.slice(1).indexOf('七杀') >= 0;
+
+  var lv = 0, name = '自主创业/自由职业', stars = '☆☆☆', icon = '🌾', desc = '【伤官生财/食神制杀格】命局中家内家外未能引通官杀星，天生不喜条条框框的束缚。更适合在市场经济中自主拼搏，自由度高，上限由财星决定！';
+  
+  if (homeHas && awayHas) {
+    if (yuelingGuan || shizhiGuan) {
+      lv = 3; name = '行政公务员编制'; stars = '★★★'; icon = '🏛️'; desc = '【官气通根格】官杀星雄踞月令或时支门户，且内外引通！生来便带公职贵气，极易通过国考、省考进入核心权力或行政机关，端稳金饭碗。';
+    } else {
+      var mg = pillars[1].shiShens[0];
+      if (mg === '比肩' || mg === '劫财') {
+        lv = 1; name = '大型央企/国企编制'; stars = '★☆☆'; icon = '🏢'; desc = '【官星有劫格】月干透出比劫，而官杀星在外护航。多就职于资源垄断型央企、国企或混合所有制龙头，稳定有余且抗风险能力极强。';
+      } else {
+        lv = 2; name = '全额事业编/高校公职'; stars = '★★☆'; icon = '🏫'; desc = '【财官相生/杀印相生格】官杀星在命局中发挥了稳定作用，极易进入高校、医院、科研院所等全额拨款的事业单位，清高有声望，旱涝保收。';
+      }
+    }
+  } 
+  else if (awayHas && !homeHas) {
+    lv = 1; name = '大厂骨干/外企高管'; stars = '★☆☆'; icon = '💼'; desc = '【官星虚透格】官杀星只在年月的远方闪烁，家里没沾上。说明你服务的平台很大（如名企、跨国大厂），在外风光，但缺乏铁饭碗体制在内遮风挡雨。';
+  } 
+  else if (homeHas && !awayHas) {
+    lv = 1; name = '地方豪强/家族企业'; stars = '★☆☆'; icon = '🏡'; desc = '【官星闭门格】官杀星锁在家里（日时），外门没开。代表适合在本地、自家企业或特定垂直圈子内称王称霸，虽无官方大编制，幕后掌握实权。';
+  }
+  
+  return {pillars: pillars, homeHasGuan: homeHas, awayHasGuan: awayHas, level: lv, levelName: name, stars: stars, icon: icon, levelDesc: desc};
+}
+
+function render(bazi, result, infoText, gender) {
+  document.getElementById('infoLine').textContent = (gender === 'male' ? '乾造 (男命)' : '坤造 (女命)') + ' | ' + infoText + ' | 四柱：' + bazi.sz.join(' ');
+  var grid = document.getElementById('baziGrid'); grid.innerHTML = '';
+  
+  result.pillars.forEach(function(p) {
+    var c = document.createElement('div');
+    c.className = 'bazi-cell';
+    var ih = p.zone === 'home';
+    var ssList = p.shiShens;
+    
+    var sShenHtml = '<span class="pillar-tag tag-' + (ih ? 'home' : 'away') + '">' + ssList[0] + '</span>';
+    for(var k=1; k<ssList.length; k++) {
+      var isG = ssList[k] === '正官' || ssList[k] === '七杀';
+      sShenHtml += '<span class="pillar-tag ' + (isG ? 'tag-guan' : '') + '" style="color:rgba(255,255,255,0.6); background:rgba(255,255,255,0.05)">' + ssList[k] + '</span>';
+    }
+    
+    c.innerHTML = '<div class="pillar-label">' + (ih ? '🏠' : '🏛️') + ' ' + p.name + '</div>' +
+                  '<div class="gan">' + p.gan + '</div>' +
+                  '<div class="zhi">' + p.zhi + '</div>' +
+                  '<div class="cang-label">藏干</div>' +
+                  '<div class="cang-list">' + (p.cangs.join(' ') || '—') + '</div>' +
+                  '<div class="shi-shen">' + sShenHtml + '</div>';
+    grid.appendChild(c);
+  });
+  
+  var rp = document.getElementById('resultPanel');
+  if(rp) {
+    rp.className = 'result-panel level-' + result.level + ' show';
+  }
+  
+  if(document.getElementById('resultIcon')) document.getElementById('resultIcon').textContent = result.icon;
+  if(document.getElementById('resultStars')) document.getElementById('resultStars').textContent = result.stars;
+  if(document.getElementById('resultLevel')) document.getElementById('resultLevel').textContent = result.levelName;
+  if(document.getElementById('resultDesc')) document.getElementById('resultDesc').textContent = result.levelDesc;
+  
+  var ds = document.getElementById('detailSection');
+  if(ds) {
+    ds.innerHTML = '<div class="detail-item"><span class="label">内盘（日柱/时柱）见官杀护卫</span><span class="value ' + (result.homeHasGuan ? 'yes' : 'no') + '">' + (result.homeHasGuan ? '✓ 已引通' : '✗ 未见') + '</span></div>' +
+                   '<div class="detail-item"><span class="label">外盘（年柱/月柱）见官杀显露</span><span class="value ' + (result.awayHasGuan ? 'yes' : 'no') + '">' + (result.awayHasGuan ? '✓ 已显露' : '✗ 未见') + '</span></div>' +
+                   '<div class="detail-item"><span class="label">核心格局考核</span><span class="value">' + result.levelName + '</span></div>';
+  }
+}
+
+var _calType = 0;
+
+function fillSelect(sel, start, end, value, suffix, pad) {
+  if (!sel) return;
+  var current = value != null ? value : parseInt(sel.value);
+  sel.innerHTML = '';
+  for (var i = start; i <= end; i++) {
+    var opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = (pad && i < 10 ? '0' : '') + i + (suffix || '');
+    if (i === current) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+function getSolarMonthDays(y, m) {
+  return new Date(y, m, 0).getDate();
+}
+
+function getDateDayLimit(y, m) {
+  if (_calType === 1) return 30;
+  return getSolarMonthDays(y, m);
+}
+
+function pad2(n) {
+  return n < 10 ? '0' + n : '' + n;
+}
+
+function getFormDate() {
+  var yIn = document.getElementById('year'), mIn = document.getElementById('month'), dIn = document.getElementById('day');
+  var hIn = document.getElementById('hour'), minIn = document.getElementById('minute');
+  var leapIn = document.getElementById('leapMonth');
+  return {
+    y: yIn ? parseInt(yIn.value) : 1995,
+    m: mIn ? parseInt(mIn.value) : 10,
+    d: dIn ? parseInt(dIn.value) : 24,
+    h: hIn ? parseInt(hIn.value) : 10,
+    min: minIn ? parseInt(minIn.value) : 30,
+    isLeap: leapIn ? leapIn.value === '1' : false
+  };
+}
+
+function assertValidLunarDate(y, m, d, isLeap, sol) {
+  var back = solarToLunar(sol.year, sol.month, sol.day);
+  if (back.lunarYear !== y || back.lunarMonth !== m || back.lunarDay !== d || !!back.isLeapMonth !== !!isLeap) {
+    throw new Error('农历 ' + y + '年' + m + '月' + d + '日不存在，请检查是否为小月或闰月。');
+  }
+}
+
+function getDateConversion() {
+  var v = getFormDate();
+  if (isNaN(v.y) || isNaN(v.m) || isNaN(v.d) || isNaN(v.h) || isNaN(v.min)) {
+    throw new Error('请选择完整的出生日期和时间。');
+  }
+
+  if (_calType === 1) {
+    var sol = lunarToSolar(v.y, v.m, v.d, v.isLeap);
+    assertValidLunarDate(v.y, v.m, v.d, v.isLeap, sol);
+    var inputText = '农历 ' + v.y + '年' + (v.isLeap ? '闰' : '') + v.m + '月' + v.d + '日 ' + pad2(v.h) + ':' + pad2(v.min);
+    return {
+      inputText: inputText,
+      convertText: '阳历 ' + sol.year + '年' + sol.month + '月' + sol.day + '日 ' + pad2(v.h) + ':' + pad2(v.min),
+      sy: sol.year,
+      sm: sol.month,
+      sd: sol.day,
+      h: v.h,
+      min: v.min
+    };
+  }
+
+  var solarDate = new Date(v.y, v.m - 1, v.d);
+  if (solarDate.getFullYear() !== v.y || solarDate.getMonth() + 1 !== v.m || solarDate.getDate() !== v.d) {
+    throw new Error('阳历日期不存在，请重新选择。');
+  }
+  var lunar = solarToLunar(v.y, v.m, v.d);
+  var lunarText = '农历 ' + lunar.lunarYear + '年' + lunar.lunarMonthName + lunar.lunarDayName;
+  return {
+    inputText: '阳历 ' + v.y + '年' + v.m + '月' + v.d + '日 ' + pad2(v.h) + ':' + pad2(v.min),
+    convertText: lunarText,
+    sy: v.y,
+    sm: v.m,
+    sd: v.d,
+    h: v.h,
+    min: v.min
+  };
+}
+
+function updateDateConversion() {
+  var line = document.getElementById('convertLine');
+  if (!line) return;
+  try {
+    var c = getDateConversion();
+    line.className = 'convert-line';
+    line.innerHTML = '<strong>日期换算</strong>：' + c.inputText + ' ⇄ ' + c.convertText +
+      '<br><strong>排盘采用</strong>：阳历 ' + c.sy + '年' + c.sm + '月' + c.sd + '日 ' + pad2(c.h) + ':' + pad2(c.min);
+  } catch (e) {
+    line.className = 'convert-line error';
+    line.textContent = e.message;
+  }
+}
+
+function refreshDayOptions() {
+  var yIn = document.getElementById('year');
+  var mIn = document.getElementById('month');
+  var dIn = document.getElementById('day');
+  if (!yIn || !mIn || !dIn) return;
+  var y = parseInt(yIn.value) || 1995;
+  var m = parseInt(mIn.value) || 1;
+  var oldDay = parseInt(dIn.value) || 1;
+  var maxDay = getDateDayLimit(y, m);
+  fillSelect(dIn, 1, maxDay, Math.min(oldDay, maxDay), '日', true);
+  updateLeapOptions();
+  updateDateConversion();
+}
+
+function updateLeapOptions() {
+  var yIn = document.getElementById('year');
+  var mIn = document.getElementById('month');
+  var wrap = document.getElementById('leapWrap');
+  var leapIn = document.getElementById('leapMonth');
+  if (!yIn || !mIn || !wrap || !leapIn) return;
+  var y = parseInt(yIn.value) || 1995;
+  var m = parseInt(mIn.value) || 1;
+  var leap = _calType === 1 ? getLeapMonth(y) : 0;
+  var canLeap = leap === m;
+  wrap.style.display = _calType === 1 ? '' : 'none';
+  leapIn.disabled = !canLeap;
+  leapIn.options[1].textContent = canLeap ? '闰' + m + '月' : '本月无闰月';
+  if (!canLeap) leapIn.value = '0';
+}
+
+function initDateSelects() {
+  fillSelect(document.getElementById('year'), 1930, 2100, 1995, '年', false);
+  fillSelect(document.getElementById('month'), 1, 12, 10, '月', true);
+  fillSelect(document.getElementById('hour'), 0, 23, 10, '时', true);
+  fillSelect(document.getElementById('minute'), 0, 59, 30, '分', true);
+  refreshDayOptions();
+
+  var yIn = document.getElementById('year');
+  var mIn = document.getElementById('month');
+  var dIn = document.getElementById('day');
+  var hIn = document.getElementById('hour');
+  var minIn = document.getElementById('minute');
+  var gIn = document.getElementById('gender');
+  if (yIn) yIn.onchange = refreshDayOptions;
+  if (mIn) mIn.onchange = refreshDayOptions;
+  if (dIn) dIn.onchange = updateDateConversion;
+  if (hIn) hIn.onchange = updateDateConversion;
+  if (minIn) minIn.onchange = updateDateConversion;
+  if (gIn) gIn.onchange = updateDateConversion;
+  var leapIn = document.getElementById('leapMonth');
+  if (leapIn) leapIn.onchange = updateDateConversion;
+  updateLeapOptions();
+  updateDateConversion();
+}
+
+function switchCal(t) {
+  _calType = t;
+  var b0 = document.getElementById('btnCal0');
+  var b1 = document.getElementById('btnCal1');
+  if(b0 && b1) {
+    b0.className = 'cal-type-btn' + (t === 0 ? ' active' : '');
+    b1.className = 'cal-type-btn' + (t === 1 ? ' active' : '');
+  }
+  var lYear = document.getElementById('lblYear');
+  var lMonth = document.getElementById('lblMonth');
+  var lDay = document.getElementById('lblDay');
+  if(lYear && lMonth && lDay) {
+    if (t === 1) {
+      lYear.textContent = '农历出生年'; lMonth.textContent = '农历出生月'; lDay.textContent = '农历出生日';
+    } else {
+      lYear.textContent = '出生年份'; lMonth.textContent = '出生月份'; lDay.textContent = '出生日期';
+    }
+  }
+  refreshDayOptions();
+  updateLeapOptions();
+  updateDateConversion();
+}
+
+function calc() {
+  try {
+    var gIn = document.getElementById('gender');
+    var c = getDateConversion();
+    updateDateConversion();
+
+    var sy = c.sy, sm = c.sm, sd = c.sd;
+    var h = c.h, min = c.min;
+    var gender = gIn ? gIn.value : 'male';
+
+    var bazi = getBazi(sy, sm, sd, h, min);
+    var result = judge(bazi);
+    
+    var info = [];
+    info.push('当前输入：' + c.inputText);
+    info.push('日期换算：' + c.convertText);
+    
+    var bPanel = document.getElementById('baziPanel');
+    if(bPanel) bPanel.className = 'bazi-panel show';
+    
+    render(bazi, result, info.join(' | '), gender);
+  } catch(e) {
+    alert('计算异常：' + e.message);
+  }
+}
+
+var DEMOS = [
+  {y: 1995, m: 10, d: 24, h: 10, mt: 30}, 
+  {y: 1988, m: 5, d: 12, h: 8, mt: 30},
+  {y: 2000, m: 8, d: 18, h: 23, mt: 45}  
+];
+var di = 0;
+function demo() {
+  var de = DEMOS[di % DEMOS.length]; di++;
+  switchCal(0);
+  if(document.getElementById('year')) document.getElementById('year').value = de.y;
+  if(document.getElementById('month')) document.getElementById('month').value = de.m;
+  if(document.getElementById('day')) document.getElementById('day').value = de.d;
+  if(document.getElementById('hour')) document.getElementById('hour').value = de.h;
+  if(document.getElementById('minute')) document.getElementById('minute').value = de.mt;
+  calc();
+}
+
+
+
+var _calType = 0;
+
+function initDateSelects() {
+  fillSelect(document.getElementById("year"), 1930, 2100, 1995, "年", false);
+  fillSelect(document.getElementById("month"), 1, 12, 10, "月", true);
+  fillSelect(document.getElementById("day"), 1, 31, 12, "日", true);
+}
+function refreshDayOptions() {
+  var yIn = document.getElementById("year"), mIn = document.getElementById("month"), dIn = document.getElementById("day");
+  if (!yIn || !mIn || !dIn) return;
+  fillSelect(dIn, 1, getDateDayLimit(+yIn.value||1995, +mIn.value||1), Math.min(+dIn.value||1, 31), "日", true);
+}
+
+function startDivination() {
+  var y = +document.getElementById("year").value;
+  var m = +document.getElementById("month").value;
+  var d = +document.getElementById("day").value;
+  var h = +document.getElementById("hour").value;
+  var g = document.getElementById("gender").value;
+  if (!y || !m || !d) { alert("请选择完整日期"); return; }
+  
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("resultBox").style.display = "none";
+  document.getElementById("pricing").style.display = "none";
+  
+  setTimeout(function() {
+    try {
+      var b = getBazi(y, m, d, h >= 0 ? h * 2 + 1 : 6, 0);
+      var r = judge(b);
+      
+      var html = "<div style='text-align:center;margin-bottom:10px'><div style='color:#ffd700;font-size:14px;letter-spacing:3px'>✦ 四柱八字 ✦</div>";
+      html += "<div style='color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:10px'>" + (g === "male" ? "乾造" : "坤造") + " | " + b.sz.join(" ") + "</div></div>";
+      html += "<div class='bazi-grid'>";
+      var labels = ["年柱", "月柱", "日柱", "时柱"];
+      for (var i = 0; i < 4; i++) {
+        html += "<div class='bazi-cell'><div class='pillar-label'>" + labels[i] + "</div>";
+        html += "<div class='gan'>" + Gan[b.tg[i]] + "</div>";
+        html += "<div class='zhi'>" + Zhi[b.dz[i]] + "</div>";
+        if (r.pillars[i] && r.pillars[i].shiShens) {
+          html += "<div class='shi-shen'>" + r.pillars[i].shiShens.slice(0,3).join("<br>") + "</div>";
+        }
+        html += "</div>";
+      }
+      html += "</div>";
+      
+      var reading = "";
+      if (r.level >= 2) {
+        reading = "官星得地，天生公门命。你的命格中官杀通根，天赋当官从政的潜质，穿戴正衣网网可以说是走向你命运登顶的最佳路径。";
+      } else if (r.level >= 1) {
+        reading = "官星偏弱，但正偏官杀皆有显现，需大运提拔方可入公门。有从政的基础，但需找准时机、选对方向，否则官路多波折。";
+      } else {
+        reading = "命局中官杀不显，晋升发展可能更依赖后天努力和大运带动。你的优势不在公门，而在其他领域，不必执着于"吃公粮"这一条路。";
+      }
+      
+      html += "<div class='reading'><strong>✦ 命盘初解 ✦</strong><br><br>" + reading + "</div>";
+      html += "<div class='result-level'>" + (r.level >= 2 ? "行政公务员编制" : r.level >= 1 ? "事业单位或企业管理" : "公门缘分较薄") + "</div>";
+      html += "<div class='stars'>" + (r.level >= 2 ? "★★★★★" : r.level >= 1 ? "★★★☆☆" : "★★☆☆☆") + "</div>";
+      
+      document.getElementById("resultContent").innerHTML = html;
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("resultBox").style.display = "block";
+      
+      // Show pricing after result
+      setTimeout(function() {
+        document.getElementById("pricing").style.display = "block";
+      }, 1000);
+      
+    } catch(e) {
+      document.getElementById("loading").style.display = "none";
+      alert("计算异常：" + e.message);
+    }
+  }, 1500);
+}
+
+function showPayment() {
+  document.getElementById("paymentModal").style.display = "flex";
+}
+
+function switchTab(type) {
+  var tabs = document.querySelectorAll(".qr-tab");
+  var codes = document.querySelectorAll(".qr-code");
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+  for (var i = 0; i < codes.length; i++) codes[i].classList.remove("active");
+  if (type === "alipay") {
+    tabs[0].classList.add("active");
+    document.getElementById("qr-alipay").classList.add("active");
+  } else {
+    tabs[1].classList.add("active");
+    document.getElementById("qr-eth").classList.add("active");
+  }
+}
+
+function copyAddress() {
+  navigator.clipboard.writeText("0xfc7501fdbe9e7f37dd1d468e1c726291a127d331").then(function() {
+    alert("以太坊地址已复制");
+  });
+}
+
+window.onload = function() {
+  initDateSelects();
+};
+</script>
+</body>
+</html>
