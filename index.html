@@ -760,7 +760,7 @@ function startDivination() {
   
   document.getElementById("loading").style.display = "block";
   document.getElementById("resultBox").style.display = "none";
-  document.getElementById("pricing").style.display = "none";
+  var p=document.getElementById("pricing");if(p){p.style.setProperty("display","none","important");};
   
   setTimeout(function() {
     try {
@@ -802,8 +802,13 @@ function startDivination() {
       document.getElementById("resultBox").style.display = "block";
       
       setTimeout(function() {
-        document.getElementById("pricing").style.display = "block";
+        var p=document.getElementById("pricing");if(p){p.style.setProperty("display","block","important");};
       }, 1500);
+      // Fail-safe: check again after 3s
+      setTimeout(function() {
+        var p=document.getElementById("pricing");
+        if(p && p.style.display !== "block") p.style.setProperty("display","block","important");
+      }, 3000);
       
     } catch(e) {
       document.getElementById("loading").style.display = "none";
